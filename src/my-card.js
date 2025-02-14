@@ -16,38 +16,42 @@ export class MyCard extends LitElement {
     super();
     this.title = "The card title";
     this.imagelink = "https://safesendsoftware.com/wp-content/uploads/2016/06/Human-Error.jpg";
-    this.description = "A description of the card";
     this.linklocale = "#";
     this.linkdetails = "More details";
-    this.backgroundcolor = css `green`;
+    this.different = false;
   }
 
   static get styles() {
     return css`
       :host {
-        display: block;
+        display: inline-flex;
+      }
+      :host([different]) .card {
+        background-color: #671b1b;
       }
       .card {
         margin: 5px;
-        background-color: red;
-        display: inline-flex;
+        background-color: #595959;
+        display: flex;
         box-shadow: 5px 5px 5px ;
         transition: .6s all ease-in-out;
         border-radius: 15px;
-      }
-      .card2 {
-      background-color: #802000;
-      display: inline-flex;
+        padding: 25px;
+        height: auto;
+        width: 300px;
       }
       .card-img {
-      margin: 15px;
-      height: 150px;
+      margin-right: auto;
+      margin-top: auto;
+      height: 200px;
+      width: 200px;
       display: block;
+      border-radius: 10px;
       }
       .descriptbox {
-      margin-right: 20px;
-      margin-left: 20px;
-      margin-bottom: 20px;
+      margin-top: 15px;
+      margin-left: auto;
+      margin-right: auto;
       padding: 10px;
       width: 250px;
       background-color: white;
@@ -55,11 +59,24 @@ export class MyCard extends LitElement {
       box-shadow: 2px 2px 2px inset; 
       }
       .linkdetails{
-      margin-left: 90px;
+      margin-left: auto;
+      margin-right: auto;
+      }
+      p {
+        text-size-adjust: 15px;
       }
       `;
   }
-
+// put this anywhere on the MyCard class; just above render() is probably good
+openChanged(e) {
+  console.log(e.newState);
+  if (e.newState === "open") {
+    this.different = true;
+  }
+  else {
+    this.different = false;
+  }
+}
   render() {
     return html`
     <div class="card">
@@ -67,31 +84,32 @@ export class MyCard extends LitElement {
           <img class="card-img" src=${this.imagelink}>
           <div class="descriptbox">
             <h3 class="header">${this.title}</h3>
-            <p>  ${this.description}
-            </p>
-            <a class="linkdetails" href=${this.linklocale}>
+            <details ?open="${this.different}" @toggle="${this.openChanged}">
+            <slot>
+            </slot>
+            <a target="_blank" class="linkdetails" id="detailbtn" rel="noopener noreferrer" href=${this.linklocale}
+            @click=${this.clickhandler}>  
               ${this.linkdetails}
             </a>
+            </details>
           </div>
         </div>
     </div>
     
     `;
   }
-
   static get properties() {
     return {
       title: { type: String },
       imagelink: { type: String },
-      description: { type: String },
       linklocale: { type: String },
       linkdetails: { type: String },
-      backgroundcolor: { type: String }
+      different: {type: Boolean, reflect: true},
+      // What reflect does is whenever the value of different changes, it will reflect that on the website.
     };
   }
+  
 }
 
 globalThis.customElements.define(MyCard.tag, MyCard);
 
-
-// Making buttons work is hard. I could not do dat yet.
